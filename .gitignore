@@ -1,1 +1,4 @@
 **/.terraform*
+
+# Experimental directory - not tracked in main branch
+exp/*.tfstate*
