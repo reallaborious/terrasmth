@@ -4,7 +4,11 @@ variable "rg_name" {
 }
 variable "subscription_id" {
   type = string
-  description = "Subscription name in what a RG should be created"
+  description = "Azure subscription ID where the resource group should be created"
+  validation {
+    condition = match(regex, subscription_id)
+    error_message = "Subscription ID must be a valid UUID format"
+  }
 }
 variable "location" {
     type = string

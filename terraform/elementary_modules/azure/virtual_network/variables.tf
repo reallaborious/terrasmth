@@ -1,20 +1,29 @@
 variable "vnet_name" {
-    type = string
-    description = "Azure Virtual Network name"
+  description = "The name of the virtual network."
+  type        = string
 }
-variable "subscription_id" {
-  type = string
-  description = "Subscription name in what a RG should be created"
-}
+
 variable "location" {
-    type = string
-    description = "Azure resource group location"
+  description = "The Azure region for the virtual network."
+  type        = string
 }
+
 variable "rg_name" {
-    type = string
-    description = "Azure resource group name"
+  description = "The name of the resource group."
+  type        = string
 }
+
 variable "address_space" {
-    type = list
-    description = "Adress space"
+  description = "The address space that is used by the virtual network."
+  type        = list(string)
+}
+
+variable "subnet_names" {
+  description = "A list of subnet names."
+  type        = list(string)
+}
+
+variable "subnet_prefixes" {
+  description = "A list of address prefixes for the subnets."
+  type        = list(string)
 }

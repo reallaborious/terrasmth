@@ -18,7 +18,7 @@ terraform {
 provider "azurerm" {
   # subscription_id = var.subscription_id
   # alias           = "vnetconnectivity"
-  skip_provider_registration = "true"
+  # skip_provider_registration = "true"
   features {
     resource_group {
       prevent_deletion_if_contains_resources = true

@@ -1,0 +1,4 @@
+locals {
+  tenant_id        = "<your-tenant-id>"
+  subscription_id  = "<your-subscription-id>"
+}
