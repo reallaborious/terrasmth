@@ -15,9 +15,9 @@ resource "azurerm_network_interface" "this" {
     }
   }
 
-  dns_servers                   = var.dns_servers
-  enable_accelerated_networking = var.enable_accelerated_networking
-  enable_ip_forwarding         = var.enable_ip_forwarding
+  dns_servers                 = var.dns_servers
+  accelerated_networking_enabled = var.enable_accelerated_networking
+  ip_forwarding_enabled       = var.enable_ip_forwarding
 
   tags = var.tags
 }
