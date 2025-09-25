@@ -4,7 +4,13 @@
   become: yes
   vars:
     ollama_models: 
+      - "qwen3:latest"
+      - "qwen2.5:latest"
+      - "codellama:latest"
+      - "deepseek-coder:latest"
       - "llama3.2:1b"
+      - "phi3:latest"
+      - "mistral:latest"
     
   tasks:
     - name: Update apt cache
@@ -71,9 +77,8 @@
         timeout: 60
 
     - name: Pull Ollama models
-      shell: "ollama pull {{ item }}"
+      shell: "OLLAMA_HOST=127.0.0.1:11434 ollama pull {{ item }}"
       loop: "{{ ollama_models }}"
-      become_user: ollama
       register: pull_result
       retries: 3
       delay: 10
