@@ -1,4 +1,4 @@
 locals {
-  tenant_id        = "<your-tenant-id>"
-  subscription_id  = "<your-subscription-id>"
+  tenant_id        = get_env("ARM_TENANT_ID", "")
+  subscription_id  = get_env("ARM_SUBSCRIPTION_ID", "")
 }
