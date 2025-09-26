@@ -10,3 +10,8 @@
 
 # Experimental directory - not tracked in main branch
 exp/
+
+# Ansible generated files
+**/generated_inventory.ini
+**/extra_vars.json
+**/inventory.ini

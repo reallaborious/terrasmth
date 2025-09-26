@@ -3,14 +3,9 @@
   hosts: all
   become: yes
   vars:
-    ollama_models: 
-      - "qwen3:latest"
-      - "qwen2.5:latest"
-      - "codellama:latest"
-      - "deepseek-coder:latest"
-      - "llama3.2:1b"
-      - "phi3:latest"
-      - "mistral:latest"
+    # Models will be passed via --extra-vars from Terraform
+    # Default fallback models if not provided
+    ollama_models: "{{ ollama_models | default(['qwen3:latest', 'codellama:latest', 'deepseek-coder:latest']) }}"
     
   tasks:
     - name: Update apt cache

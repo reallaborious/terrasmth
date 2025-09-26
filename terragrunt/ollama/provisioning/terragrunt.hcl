@@ -26,6 +26,16 @@ inputs = {
   
   playbook_path = "${get_terragrunt_dir()}/ansible/install-ollama.yml"
   
+  ollama_models = [
+    "qwen3:latest",
+    "qwen2.5:latest", 
+    "codellama:latest",
+    "deepseek-coder:latest",
+    "llama3.2:1b",
+    "phi3:latest",
+    "mistral:latest"
+  ]
+  
   tags = {
     Component = "provisioning"
     Purpose = "ollama-installation"

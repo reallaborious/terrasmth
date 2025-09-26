@@ -15,7 +15,7 @@ resource "local_file" "ansible_vars" {
   filename = "${path.module}/extra_vars.json"
   content  = jsonencode({
     ollama_version = "latest"
-    ollama_models = ["llama2", "codellama"]
+    ollama_models = var.ollama_models
     nvidia_gpu_support = false
   })
 

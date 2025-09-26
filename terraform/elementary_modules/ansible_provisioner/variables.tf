@@ -24,3 +24,9 @@ variable "ansible_timeout" {
   type        = number
   default     = 1800
 }
+
+variable "ollama_models" {
+  description = "List of Ollama models to download"
+  type        = list(string)
+  default     = ["qwen3:latest", "codellama:latest", "deepseek-coder:latest"]
+}
