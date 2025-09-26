@@ -15,7 +15,7 @@ dependency "resource_group" {
 }
 
 inputs = {
-  keyvault_name       = "${local.config.locals.project_name}-kv"
+  key_vault_name      = "${local.config.locals.project_name}-kv"
   resource_group_name = dependency.resource_group.outputs.resource_group_name
   location           = local.config.locals.location
   subscription_id    = local.config.locals.subscription_id

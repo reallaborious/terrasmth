@@ -15,7 +15,7 @@ dependency "resource_group" {
 }
 
 inputs = {
-  nsg_name            = "${local.config.locals.project_name}-nsg"
+  network_security_group_name = "${local.config.locals.project_name}-nsg"
   resource_group_name = dependency.resource_group.outputs.resource_group_name
   location           = local.config.locals.location
   subscription_id    = local.config.locals.subscription_id

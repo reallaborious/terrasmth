@@ -6,6 +6,12 @@ locals {
   project_name    = "hunyuan3d-2gp"
   location        = "East US"  # GPU instances availability
   
+  # Static storage account name (max 24 chars, lowercase + numbers only)
+  storage_account_name = "hunyuan3dgpstorage001"
+  
+  # File share name for model cache
+  model_share_name = "hunyuan3d-models"
+  
   # Memory profile configuration (1-5, where 4 is default for 6GB VRAM)
   memory_profile  = get_env("HUNYUAN3D_MEMORY_PROFILE", "4")
   enable_texture  = get_env("HUNYUAN3D_ENABLE_TEXTURE", "false")

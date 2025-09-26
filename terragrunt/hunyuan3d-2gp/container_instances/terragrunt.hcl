@@ -70,7 +70,7 @@ inputs = {
           name       = "model-cache"
           mount_path = "/app/.cache"
           read_only  = false
-          share_name = "hunyuan3d-models"
+          share_name = local.config.locals.model_share_name
         }
       ]
       
@@ -106,7 +106,7 @@ inputs = {
       name                 = "model-cache"
       storage_account_name = dependency.storage.outputs.name
       storage_account_key  = dependency.storage.outputs.primary_access_key
-      share_name          = "hunyuan3d-models"
+      share_name          = local.config.locals.model_share_name
     }
   ]
   

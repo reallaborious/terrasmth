@@ -28,7 +28,7 @@ dependency "network" {
 }
 
 inputs = {
-  name                = "${replace(local.config.locals.project_name, "-", "")}storage"
+  name                = local.config.locals.storage_account_name
   resource_group_name = dependency.resource_group.outputs.resource_group_name
   location           = local.config.locals.location
   
