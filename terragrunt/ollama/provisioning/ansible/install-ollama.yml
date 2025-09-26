@@ -1,0 +1,87 @@
+---
+- name: Install and Configure Ollama
+  hosts: all
+  become: yes
+  vars:
+    # Models will be passed via --extra-vars from Terraform
+    # Default fallback models if not provided
+    ollama_models: "{{ ollama_models | default(['qwen3:latest', 'codellama:latest', 'deepseek-coder:latest']) }}"
+    
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - wget
+          - software-properties-common
+        state: present
+
+    - name: Download Ollama installer
+      get_url:
+        url: https://ollama.ai/install.sh
+        dest: /tmp/ollama-install.sh
+        mode: '0755'
+
+    - name: Install Ollama
+      shell: /tmp/ollama-install.sh
+      args:
+        creates: /usr/local/bin/ollama
+
+    - name: Create ollama systemd service
+      copy:
+        content: |
+          [Unit]
+          Description=Ollama Service
+          After=network-online.target
+
+          [Service]
+          ExecStart=/usr/local/bin/ollama serve
+          User=ollama
+          Group=ollama
+          Restart=always
+          RestartSec=3
+          Environment="OLLAMA_HOST=127.0.0.1:11434"
+
+          [Install]
+          WantedBy=default.target
+        dest: /etc/systemd/system/ollama.service
+
+    - name: Create ollama user
+      user:
+        name: ollama
+        system: yes
+        shell: /bin/false
+        home: /usr/share/ollama
+
+    - name: Enable and start Ollama service
+      systemd:
+        name: ollama
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Wait for Ollama to be ready
+      wait_for:
+        port: 11434
+        host: localhost
+        timeout: 60
+
+    - name: Pull Ollama models
+      shell: "OLLAMA_HOST=127.0.0.1:11434 ollama pull {{ item }}"
+      loop: "{{ ollama_models }}"
+      register: pull_result
+      retries: 3
+      delay: 10
+
+    - name: Display Ollama service status
+      shell: systemctl status ollama --no-pager
+      register: ollama_status
+
+    - name: Show Ollama status
+      debug:
+        var: ollama_status.stdout_lines

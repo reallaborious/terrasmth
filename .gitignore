@@ -1,4 +1,17 @@
 **/.terraform*
 
+# Terragrunt cache and state files
+**/.terragrunt-cache/
+**/.terragrunt-cache/**
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/.terragrunt-init-required
+**/.terraform.lock.hcl
+
 # Experimental directory - not tracked in main branch
 exp/
+
+# Ansible generated files
+**/generated_inventory.ini
+**/extra_vars.json
+**/inventory.ini
