@@ -1,4 +1,6 @@
-# Plan: Terraform Modules for Azure Docker Deployment (Hunyuan3D-2GP)
+# Plan: Terraform Modules for Azure Docker Deployment (Hunyuan3D-2GP) - DEPRECATED
+
+> **⚠️ DEPRECATED**: This document has been superseded by the comprehensive infrastructure deployment plan. See `docs/HUNYUAN3D_2GP_INFRASTRUCTURE_PLAN.md` for the complete production-ready deployment architecture.
 
 ## Objective
 
