@@ -1,0 +1,138 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - docker.io
+  - git
+  - curl
+  - unzip
+
+# Create docker group and add user
+groups:
+  - docker
+
+users:
+  - default
+  - name: builduser
+    groups: docker
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+# Start docker service
+runcmd:
+  - systemctl start docker
+  - systemctl enable docker
+  - usermod -aG docker azureuser
+  - usermod -aG docker builduser
+  
+  # Install Azure CLI
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+  
+write_files:
+  - path: /home/builduser/setup-and-build.sh
+    permissions: '0755'
+    owner: builduser:builduser
+    content: |
+      #!/bin/bash
+      set -e
+      
+      echo "=== Hunyuan3D Docker Build Setup ==="
+      
+      # Clone the repository
+      echo "Cloning Hunyuan3D-2GP repository..."
+      cd /home/builduser
+      git clone https://github.com/tencent/Hunyuan3D-2.git hunyuan3d-2gp
+      cd hunyuan3d-2gp
+      
+      # Create optimized Dockerfile
+      echo "Creating optimized Dockerfile..."
+      cat > Dockerfile << 'EOF'
+      FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+      
+      # Set environment variables
+      ENV DEBIAN_FRONTEND=noninteractive
+      ENV PYTHONUNBUFFERED=1
+      ENV CUDA_VISIBLE_DEVICES=0
+      
+      # Install system dependencies
+      RUN apt-get update && apt-get install -y \
+          python3 \
+          python3-pip \
+          python3-dev \
+          git \
+          curl \
+          wget \
+          ffmpeg \
+          libsm6 \
+          libxext6 \
+          libxrender-dev \
+          libglib2.0-0 \
+          && rm -rf /var/lib/apt/lists/*
+      
+      # Create non-root user
+      RUN useradd -m -u 1000 appuser
+      
+      # Set working directory
+      WORKDIR /app
+      
+      # Copy requirements and install Python dependencies
+      COPY requirements.txt .
+      RUN pip3 install --no-cache-dir -r requirements.txt
+      
+      # Copy application code
+      COPY . .
+      
+      # Create cache directory for models
+      RUN mkdir -p /app/models && chown -R appuser:appuser /app
+      
+      # Switch to non-root user
+      USER appuser
+      
+      # Expose port
+      EXPOSE 7860
+      
+      # Set entrypoint
+      CMD ["python3", "api_server.py", "--host", "0.0.0.0", "--port", "7860"]
+      EOF
+      
+      echo "Setup complete. Use build-and-push.sh to build and push the image."
+
+  - path: /home/builduser/build-and-push.sh
+    permissions: '0755'
+    owner: builduser:builduser
+    content: |
+      #!/bin/bash
+      set -e
+      
+      if [ -z "$1" ]; then
+        echo "Usage: $0 <ACR_NAME>"
+        echo "Example: $0 hunyuan3d2gpacr"
+        exit 1
+      fi
+      
+      ACR_NAME=$1
+      
+      echo "=== Building and Pushing Hunyuan3D Docker Image ==="
+      
+      cd /home/builduser/hunyuan3d-2gp
+      
+      # Build the Docker image
+      echo "Building Docker image..."
+      docker build -t hunyuan3d-2gp-api:latest .
+      
+      # Tag for ACR
+      echo "Tagging for ACR..."
+      docker tag hunyuan3d-2gp-api:latest ${acr_name}.azurecr.io/hunyuan3d-2gp-api:latest
+      
+      # Login to ACR (requires Azure CLI to be authenticated)
+      echo "Logging in to ACR..."
+      az acr login --name ${acr_name}
+      
+      # Push to ACR
+      echo "Pushing to ACR..."
+      docker push ${acr_name}.azurecr.io/hunyuan3d-2gp-api:latest
+      
+      echo "Build and push completed successfully!"
+      echo "Image available at: ${acr_name}.azurecr.io/hunyuan3d-2gp-api:latest"
+
+final_message: "Build VM ready! SSH in and run: sudo -u builduser /home/builduser/setup-and-build.sh"

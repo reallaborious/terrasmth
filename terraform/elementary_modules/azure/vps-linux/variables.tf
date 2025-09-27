@@ -126,6 +126,12 @@ variable "boot_diagnostics_storage_account_uri" {
   default     = null
 }
 
+variable "custom_data" {
+  description = "Base64-encoded custom data for cloud-init. If null, no custom data will be provided"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Tags to apply to the virtual machine"
   type        = map(string)

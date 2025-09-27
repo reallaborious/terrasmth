@@ -14,6 +14,9 @@ resource "azurerm_linux_virtual_machine" "this" {
   # Network interfaces (created by network_interface module)
   network_interface_ids = var.network_interface_ids
 
+  # Custom data for cloud-init
+  custom_data = var.custom_data
+
   # SSH key configuration
   dynamic "admin_ssh_key" {
     for_each = var.ssh_public_key != null ? [1] : []

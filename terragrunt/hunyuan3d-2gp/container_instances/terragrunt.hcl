@@ -26,6 +26,14 @@ dependency "network" {
   }
 }
 
+dependency "build_vm" {
+  config_path = "../build_vm"
+  
+  mock_outputs = {
+    vm_id = "mock-build-vm-id"
+  }
+}
+
 dependency "storage" {
   config_path = "../storage"
   
