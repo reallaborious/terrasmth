@@ -38,6 +38,8 @@ inputs = {
     enabled = false
   }
   
+  # ACR Tasks will be created manually via Azure CLI after deployment
+  
   tags = merge(local.config.locals.common_tags, {
     Component = "ContainerRegistry"
     Purpose   = "ImageStorage"

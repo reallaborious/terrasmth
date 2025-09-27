@@ -34,3 +34,5 @@ output "identity" {
   } : null
   description = "An identity block, which contains the Managed Service Identity information for this Container Registry."
 }
+
+# ACR tasks outputs removed - will be handled separately

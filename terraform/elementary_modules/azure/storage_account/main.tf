@@ -58,3 +58,16 @@ resource "azurerm_storage_account" "this" {
     read   = var.timeout_read
   }
 }
+
+# File shares for Azure Files
+resource "azurerm_storage_share" "file_share" {
+  for_each = {
+    for share in var.file_shares : share.name => share
+  }
+  
+  name                 = each.value.name
+  storage_account_name = azurerm_storage_account.this.name
+  quota                = each.value.quota
+  enabled_protocol     = each.value.enabled_protocol
+  access_tier          = each.value.access_tier
+}

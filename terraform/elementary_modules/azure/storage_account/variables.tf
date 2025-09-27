@@ -117,3 +117,14 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   default     = {}
 }
+
+variable "file_shares" {
+  type = list(object({
+    name             = string
+    quota            = optional(number, 50)
+    enabled_protocol = optional(string, "SMB")
+    access_tier      = optional(string, "TransactionOptimized")
+  }))
+  description = "List of file shares to create in the storage account"
+  default     = []
+}

@@ -56,6 +56,16 @@ inputs = {
     virtual_network_subnet_ids = [dependency.network.outputs.subnet_ids[0]]
   }
   
+  # Create file share for model cache
+  file_shares = [
+    {
+      name             = local.config.locals.model_share_name
+      quota            = 100  # 100GB for model storage
+      enabled_protocol = "SMB"
+      access_tier      = "TransactionOptimized"
+    }
+  ]
+  
   tags = merge(local.config.locals.common_tags, {
     Component = "Storage"
     Purpose   = "ModelCache"

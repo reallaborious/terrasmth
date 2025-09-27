@@ -12,6 +12,10 @@ locals {
 
 dependency "resource_group" {
   config_path = "../resource_group"
+  
+  mock_outputs = {
+    resource_group_name = "hunyuan3d-2gp-rg"
+  }
 }
 
 inputs = {

@@ -61,3 +61,14 @@ output "secondary_connection_string" {
   description = "The connection string associated with the secondary location."
   sensitive   = true
 }
+
+output "file_shares" {
+  value = {
+    for k, v in azurerm_storage_share.file_share : k => {
+      id   = v.id
+      name = v.name
+      url  = v.url
+    }
+  }
+  description = "Information about created file shares."
+}

@@ -114,3 +114,19 @@ variable "tags" {
   description = "A mapping of tags to assign to the resource."
   default     = {}
 }
+
+variable "acr_tasks" {
+  type = list(object({
+    name                = string
+    source_repository   = string
+    source_branch       = optional(string, "main")
+    dockerfile_path     = optional(string, "Dockerfile")
+    image_names         = list(string)
+    context_path        = optional(string, ".")
+    enabled             = optional(bool, true)
+    trigger_on_commit   = optional(bool, false)
+    trigger_on_schedule = optional(string, null)
+  }))
+  description = "List of ACR tasks to create for building container images"
+  default     = []
+}

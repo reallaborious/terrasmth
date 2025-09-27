@@ -81,3 +81,6 @@ resource "azurerm_container_registry" "acr" {
     read   = var.timeout_read
   }
 }
+
+# ACR Tasks will be created separately or via Azure CLI
+# This keeps the Terraform configuration simpler and more reliable

@@ -12,18 +12,37 @@ locals {
 
 dependency "resource_group" {
   config_path = "../resource_group"
+  
+  mock_outputs = {
+    resource_group_name = "hunyuan3d-2gp-rg"
+  }
 }
 
 dependency "network" {
   config_path = "../network"
+  
+  mock_outputs = {
+    subnet_ids = ["subnet-mock-id"]
+  }
 }
 
 dependency "storage" {
   config_path = "../storage"
+  
+  mock_outputs = {
+    name = "hunyuan3dgpstorage001"
+    primary_access_key = "mock-access-key"
+  }
 }
 
 dependency "container_registry" {
   config_path = "../container_registry"
+  
+  mock_outputs = {
+    login_server = "hunyuan3d2gpacr.azurecr.io"
+    admin_username = "hunyuan3d2gpacr"
+    admin_password = "mock-password"
+  }
 }
 
 inputs = {
@@ -38,14 +57,14 @@ inputs = {
   containers = [
     {
       name   = "hunyuan3d-api"
-      image  = "${dependency.container_registry.outputs.login_server}/hunyuan3d-2gp:latest"
+      image  = "${dependency.container_registry.outputs.login_server}/hunyuan3d-2gp-api:latest"
       cpu    = local.config.locals.container_cpu
       memory = local.config.locals.container_memory
       
-      # GPU configuration
+      # GPU configuration for 3D model generation
       gpu = {
         count = 1
-        sku   = "K80"  # Basic GPU for development, upgrade to V100 for production
+        sku   = "V100"  # V100 GPU for production 3D generation workloads
       }
       
       ports = [

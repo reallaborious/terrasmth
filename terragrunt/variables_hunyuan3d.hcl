@@ -7,7 +7,7 @@ locals {
   location        = "East US"  # GPU instances availability
   
   # Static storage account name (max 24 chars, lowercase + numbers only)
-  storage_account_name = "hunyuan3dgpstorage001"
+  storage_account_name = "hy3dstor${formatdate("MMDDHHMM", timestamp())}"
   
   # File share name for model cache
   model_share_name = "hunyuan3d-models"
@@ -16,10 +16,10 @@ locals {
   memory_profile  = get_env("HUNYUAN3D_MEMORY_PROFILE", "4")
   enable_texture  = get_env("HUNYUAN3D_ENABLE_TEXTURE", "false")
   
-  # Container configuration
-  container_cpu    = "4.0"
-  container_memory = "16.0"
-  api_port        = "8080"
+  # Container configuration optimized for GPU workloads
+  container_cpu    = "6.0"    # Higher CPU for GPU data feeding
+  container_memory = "24.0"   # More memory for model loading and 3D processing
+  api_port        = "8081"    # Match Hunyuan3D-2GP default port
   
   # Common tags
   common_tags = {
