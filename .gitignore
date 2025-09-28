@@ -15,3 +15,7 @@ exp/
 **/generated_inventory.ini
 **/extra_vars.json
 **/inventory.ini
+cleanup-*.sh
+deploy-*.sh
+*.pem
+build-vm-key*

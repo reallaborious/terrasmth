@@ -26,22 +26,27 @@ dependency "network" {
   }
 }
 
-dependency "build_vm" {
-  config_path = "../build_vm"
-  
-  mock_outputs = {
-    vm_id = "mock-build-vm-id"
-  }
-}
+# build_vm dependency removed - not needed at runtime
+# The Docker image should already be built and pushed to ACR
+# dependency "build_vm" {
+#   config_path = "../build_vm"
+#   
+#   mock_outputs = {
+#     vm_id = "mock-build-vm-id"
+#   }
+# }
 
-dependency "storage" {
-  config_path = "../storage"
-  
-  mock_outputs = {
-    name = "hunyuan3dgpstorage001"
-    primary_access_key = "mock-access-key"
-  }
-}
+# Temporarily disabled storage dependency due to Azure provider issues
+# dependency "storage" {
+#   config_path = "../storage"
+#   
+#   mock_outputs = {
+#     id = "mock-storage-id"
+#     name = "mockstorageaccount"
+#     primary_access_key = "mock-storage-key"
+#     file_shares = {}
+#   }
+# }
 
 dependency "container_registry" {
   config_path = "../container_registry"
@@ -58,8 +63,9 @@ inputs = {
   resource_group_name = dependency.resource_group.outputs.resource_group_name
   location           = local.config.locals.location
   
-  os_type    = "Linux"
-  restart_policy = "Always"
+  os_type         = "Linux"
+  restart_policy  = "Always"
+  ip_address_type = "Public"  # Use public IP for now
   
   # GPU configuration for 3D generation
   containers = [
@@ -68,12 +74,6 @@ inputs = {
       image  = "${dependency.container_registry.outputs.login_server}/hunyuan3d-2gp-api:latest"
       cpu    = local.config.locals.container_cpu
       memory = local.config.locals.container_memory
-      
-      # GPU configuration for 3D model generation
-      gpu = {
-        count = 1
-        sku   = "V100"  # V100 GPU for production 3D generation workloads
-      }
       
       ports = [
         {
@@ -86,20 +86,22 @@ inputs = {
         HUNYUAN3D_MEMORY_PROFILE = local.config.locals.memory_profile
         HUNYUAN3D_ENABLE_TEXTURE = local.config.locals.enable_texture
         PYTHONPATH = "/app"
+        CUDA_VISIBLE_DEVICES = ""  # Force CPU mode
+        FORCE_CPU = "1"            # Additional flag for CPU fallback
       }
       
       secure_environment_variables = {
         # Add any secure environment variables here
       }
       
-      volume_mount = [
-        {
-          name       = "model-cache"
-          mount_path = "/app/.cache"
-          read_only  = false
-          share_name = local.config.locals.model_share_name
-        }
-      ]
+      # volume_mount = [
+      #   {
+      #     name       = "model-cache"
+      #     mount_path = "/app/.cache"
+      #     read_only  = false
+      #     share_name = local.config.locals.model_share_name
+      #   }
+      # ]
       
       liveness_probe = {
         http_get = {
@@ -127,21 +129,21 @@ inputs = {
     }
   ]
   
-  # Azure Files volume for model persistence
-  volume = [
-    {
-      name                 = "model-cache"
-      storage_account_name = dependency.storage.outputs.name
-      storage_account_key  = dependency.storage.outputs.primary_access_key
-      share_name          = local.config.locals.model_share_name
-    }
-  ]
+  # Azure Files volume for model persistence - temporarily disabled
+  # volume = [
+  #   {
+  #     name                 = "model-cache"
+  #     storage_account_name = dependency.storage.outputs.name
+  #     storage_account_key  = dependency.storage.outputs.primary_access_key
+  #     share_name          = local.config.locals.model_share_name
+  #   }
+  # ]
   
-  # Network configuration
-  subnet_ids = [dependency.network.outputs.subnet_ids[0]]
+  # Network configuration - temporarily disabled
+  # subnet_ids = [dependency.network.outputs.subnet_ids[0]]
   
   # Image registry credentials
-  image_registry_credential = [
+  image_registry_credentials = [
     {
       server   = dependency.container_registry.outputs.login_server
       username = dependency.container_registry.outputs.admin_username

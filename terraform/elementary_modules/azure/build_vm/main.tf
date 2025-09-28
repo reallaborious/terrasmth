@@ -30,6 +30,12 @@ resource "azurerm_network_interface" "build_vm_nic" {
   tags = var.tags
 }
 
+# Associate network security group with network interface
+resource "azurerm_network_interface_security_group_association" "build_vm_nsg_association" {
+  network_interface_id      = azurerm_network_interface.build_vm_nic.id
+  network_security_group_id = var.network_security_group_id
+}
+
 # Managed Identity for ACR access
 resource "azurerm_user_assigned_identity" "build_vm_identity" {
   name                = "${var.vm_name}-identity"

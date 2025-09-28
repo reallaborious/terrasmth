@@ -49,6 +49,13 @@ dependency "public_ip" {
   }
 }
 
+dependency "network_security_group" {
+  config_path = "../network_security_group"
+  mock_outputs = {
+    network_security_group_id = "/subscriptions/24246c45-86af-407e-993c-1883f8735933/resourceGroups/hunyuan3d-2gp-rg/providers/Microsoft.Network/networkSecurityGroups/hunyuan3d-2gp-nsg"
+  }
+}
+
 # Generate SSH key pair for the build VM
 # This module uses the dedicated build_vm module
 
@@ -59,8 +66,9 @@ inputs = {
   location            = local.config.locals.location
   
   # Network configuration
-  subnet_id    = dependency.network.outputs.subnet_ids[0]
-  public_ip_id = dependency.public_ip.outputs.public_ip_id
+  subnet_id                 = dependency.network.outputs.subnet_ids[0]
+  public_ip_id              = dependency.public_ip.outputs.public_ip_id
+  network_security_group_id = dependency.network_security_group.outputs.network_security_group_id
   
   # ACR configuration
   acr_name = dependency.container_registry.outputs.name

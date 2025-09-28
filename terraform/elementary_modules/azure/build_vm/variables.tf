@@ -42,6 +42,11 @@ variable "admin_username" {
   default     = "builduser"
 }
 
+variable "network_security_group_id" {
+  description = "ID of the network security group to associate with the VM"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

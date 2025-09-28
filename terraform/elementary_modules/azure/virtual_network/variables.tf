@@ -27,3 +27,15 @@ variable "subnet_prefixes" {
   description = "A list of address prefixes for the subnets."
   type        = list(string)
 }
+
+variable "delegations" {
+  description = "A list of delegations for each subnet (null if no delegation needed for that subnet)"
+  type = list(object({
+    name = string
+    service_delegation = object({
+      name    = string
+      actions = list(string)
+    })
+  }))
+  default = null
+}

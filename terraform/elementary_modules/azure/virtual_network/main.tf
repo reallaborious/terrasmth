@@ -11,9 +11,21 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = var.rg_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnet_prefixes[count.index]]
+  
+  # Add delegation for container instances if specified
+  dynamic "delegation" {
+    for_each = var.delegations != null ? (try(var.delegations[count.index], null) != null ? [var.delegations[count.index]] : []) : []
+    content {
+      name = delegation.value.name
+      
+      service_delegation {
+        name    = delegation.value.service_delegation.name
+        actions = delegation.value.service_delegation.actions
+      }
+    }
+  }
 }
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
 }
