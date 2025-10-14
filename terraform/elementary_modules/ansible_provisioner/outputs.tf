@@ -4,8 +4,8 @@ output "ansible_inventory_path" {
 }
 
 output "ansible_vars_path" {
-  description = "Path to the generated Ansible extra vars file"
-  value       = local_file.ansible_vars.filename
+  description = "Path to the generated Ansible extra vars file (if any)"
+  value       = length(local_file.ansible_vars) > 0 ? local_file.ansible_vars[0].filename : null
 }
 
 output "provisioning_status" {

@@ -38,7 +38,7 @@ inputs = {
   # VM Configuration
   admin_username = "azureuser"
   ssh_public_key = file("~/.ssh/id_rsa.pub")
-  vm_size       = local.vm_size
+  vm_size       = get_env("TF_VM_SIZE", "Standard_NC6s_v3")
   #vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script
   
   # OS Disk Configuration
@@ -51,9 +51,6 @@ inputs = {
   source_image_sku       = "20_04-lts"
   source_image_version   = "latest"
 
-  #Gpu support
-  nvidia_gpu_support = true
-  
   tags = {
     Environment = "development"
     Project     = "ollama"

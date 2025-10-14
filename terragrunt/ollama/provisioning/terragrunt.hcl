@@ -10,6 +10,9 @@ dependency "vm" {
     private_ip_address = "10.0.1.4"
     name = "mock-vm"
   }
+
+  mock_outputs_merge_with_state = true
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
 terraform {
@@ -25,19 +28,29 @@ inputs = {
   }]
   
   playbook_path = "${get_terragrunt_dir()}/ansible/install-ollama.yml"
-  
-  ollama_models = [
-    "qwen3:latest",
-    "qwen2.5:latest", 
-    "codellama:latest",
-    "deepseek-coder:latest",
-    "llama3.2:1b",
-    "phi3:latest",
-    "mistral:latest"
-  ]
-  
-  tags = {
-    Component = "provisioning"
-    Purpose = "ollama-installation"
+
+  # Generic provisioner settings
+  inventory_group   = "ollama_servers"
+  ansible_become    = true
+  ansible_verbosity = 1
+  ansible_timeout   = 1800
+
+  # Pass playbook-specific variables generically
+  extra_vars = {
+    ollama_models = [
+      "qwen3:latest",
+      "qwen2.5:latest", 
+      "codellama:latest",
+      "deepseek-coder:latest",
+      "llama3.2:1b",
+      "phi3:latest",
+      "mistral:latest"
+    ]
+    # GPU-related hints for playbooks (read from environment with safe defaults)
+    gpu_enabled = get_env("TF_GPU_ENABLED", "true") == "true"
+    gpu_vendor  = get_env("TF_GPU_VENDOR", "nvidia")
+    nvidia_cuda_version = get_env("TF_NVIDIA_CUDA_VERSION", "12.4")
+    nvidia_container_toolkit = get_env("TF_NVIDIA_CONTAINER_TOOLKIT", "true") == "true"
+    ollama_gpu = get_env("TF_OLLAMA_GPU", "true") == "true"
   }
 }
