@@ -30,3 +30,9 @@ variable "ollama_models" {
   type        = list(string)
   default     = ["qwen3:latest", "codellama:latest", "deepseek-coder:latest"]
 }
+
+variable "nvidia_gpu_support" {
+  description = "Support of GPU"
+  type = bool
+  default = false  
+}

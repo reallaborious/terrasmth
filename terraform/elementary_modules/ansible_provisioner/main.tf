@@ -16,7 +16,7 @@ resource "local_file" "ansible_vars" {
   content  = jsonencode({
     ollama_version = "latest"
     ollama_models = var.ollama_models
-    nvidia_gpu_support = false
+    nvidia_gpu_support = var.nvidia_gpu_support
   })
 
   provisioner "local-exec" {

@@ -8,7 +8,7 @@ terraform {
 
 inputs = {
   rg_name = "ollama-rg"
-  location = "westeurope"
-  subscription_id = get_env("ARM_SUBSCRIPTION_ID")
+  location = local.location
+  subscription_id = local.subscription_id
   tags = { environment = "ollama" }
 }

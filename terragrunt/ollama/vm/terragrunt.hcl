@@ -38,7 +38,8 @@ inputs = {
   # VM Configuration
   admin_username = "azureuser"
   ssh_public_key = file("~/.ssh/id_rsa.pub")
-  vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script
+  vm_size       = local.vm_size
+  #vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script
   
   # OS Disk Configuration
   os_disk_storage_account_type = "Premium_LRS"
@@ -49,6 +50,9 @@ inputs = {
   source_image_offer     = "0001-com-ubuntu-server-focal" 
   source_image_sku       = "20_04-lts"
   source_image_version   = "latest"
+
+  #Gpu support
+  nvidia_gpu_support = true
   
   tags = {
     Environment = "development"
