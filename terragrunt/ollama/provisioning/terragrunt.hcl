@@ -12,7 +12,7 @@ dependency "vm" {
   }
 
   mock_outputs_merge_with_state = true
-  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+  mock_outputs_allowed_terraform_commands = ["validate", "plan", "apply", "destroy"]
 }
 
 terraform {
@@ -34,6 +34,7 @@ inputs = {
   ansible_become    = true
   ansible_verbosity = 1
   ansible_timeout   = 1800
+  ansible_skip_tags = ["models"]
 
   # Pass playbook-specific variables generically
   extra_vars = {
