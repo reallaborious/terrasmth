@@ -38,7 +38,7 @@ inputs = {
   # VM Configuration
   admin_username = "azureuser"
   ssh_public_key = file("~/.ssh/id_rsa.pub")
-  vm_size       = get_env("TF_VM_SIZE", "Standard_NC6s_v3")
+  vm_size       = get_env("TF_VM_SIZE", "Standard_NC4as_T4_v3")
   #vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script
   
   # OS Disk Configuration

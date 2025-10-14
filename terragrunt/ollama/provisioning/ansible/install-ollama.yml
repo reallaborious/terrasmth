@@ -8,6 +8,65 @@
     ollama_models: "{{ ollama_models | default(['qwen3:latest', 'codellama:latest', 'deepseek-coder:latest']) }}"
     
   tasks:
+    - name: (GPU) Install NVIDIA driver prerequisites
+      apt:
+        name:
+          - build-essential
+          - dkms
+          - linux-headers-generic
+        state: present
+        update_cache: yes
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia'
+
+    - name: (GPU) Add graphics-drivers PPA (Ubuntu)
+      apt_repository:
+        repo: ppa:graphics-drivers/ppa
+        state: present
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia'
+
+    - name: (GPU) Install NVIDIA driver
+      apt:
+        name: "nvidia-driver-535"
+        state: present
+        update_cache: yes
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia'
+
+    - name: (GPU) Verify NVIDIA driver with nvidia-smi
+      command: nvidia-smi
+      register: nvidia_smi
+      changed_when: false
+      failed_when: false
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia'
+
+    - name: (GPU) Show nvidia-smi output (if available)
+      debug:
+        var: nvidia_smi.stdout_lines
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia'
+
+    - name: (GPU) Add NVIDIA container toolkit apt key
+      shell: |
+        set -e
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia' and (nvidia_container_toolkit | default(false)) | bool
+
+    - name: (GPU) Add NVIDIA container toolkit repository
+      shell: |
+        set -e
+        distribution=$( . /etc/os-release; echo ${ID}${VERSION_ID} )
+        curl -fsSL https://nvidia.github.io/libnvidia-container/${distribution}/nvidia-container-toolkit.list | tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      args:
+        creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia' and (nvidia_container_toolkit | default(false)) | bool
+
+    - name: (GPU) Install NVIDIA container toolkit
+      apt:
+        name: nvidia-container-toolkit
+        state: present
+        update_cache: yes
+      when: (gpu_enabled | default(false)) | bool and (gpu_vendor | default('nvidia')) == 'nvidia' and (nvidia_container_toolkit | default(false)) | bool
+
     - name: Update apt cache
       apt:
         update_cache: yes
