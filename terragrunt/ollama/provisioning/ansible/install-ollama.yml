@@ -136,6 +136,8 @@
       register: pull_result
       retries: 3
       delay: 10
+      tags:
+        - models
 
     - name: Display Ollama service status
       shell: systemctl status ollama --no-pager
