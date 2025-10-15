@@ -25,12 +25,12 @@ module "aws_eni" {
   source = "../../aws/eni"
   count  = local.use_aws ? 1 : 0
 
-  region                 = var.location
-  subnet_id              = var.subnet_id
-  security_group_ids     = var.security_group_id != "" ? [var.security_group_id] : []
-  public_ip_allocation_id = var.public_ip_id
+  aws_region         = var.location
+  subnet_id          = var.subnet_id
+  security_group_ids = var.security_group_id != "" ? [var.security_group_id] : []
+  # In AWS, EIP is associated to instance or ENI separately; ENI module doesn't accept EIP id here
 }
 
 output "network_interface_id" {
-  value = local.use_azure ? module.azure_nic[0].network_interface_id : (local.use_aws ? module.aws_eni[0].network_interface_id : null)
+  value = local.use_azure ? module.azure_nic[0].network_interface_id : (local.use_aws ? module.aws_eni[0].eni_id : null)
 }

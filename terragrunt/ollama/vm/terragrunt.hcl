@@ -5,6 +5,7 @@ include {
 locals {
   root      = read_terragrunt_config(find_in_parent_folders("variables_ollama.hcl"))
   ssh_user  = try(local.root.locals.ssh_user, get_env("TF_SSH_USER", "ollama"))
+  cloud     = try(local.root.locals.cloud, get_env("CLOUD", get_env("AWS_REGION", "") != "" ? "aws" : "azure"))
 }
 
 dependency "rg" {
@@ -32,6 +33,10 @@ dependency "nsg_association" {
 
 terraform {
   source = "../../../terraform/elementary_modules/cloud/compute"
+  include_in_copy = [
+    "../../../terraform/elementary_modules/aws",
+    "../../../terraform/elementary_modules/azure"
+  ]
 }
 
 inputs = {

@@ -9,6 +9,7 @@ terraform {
 inputs = {
   rg_name = "ollama-rg"
   location = get_env("TF_LOCATION", "westus")
-  subscription_id = get_env("ARM_SUBSCRIPTION_ID", "24246c45-86af-407e-993c-1883f8735933")
+  # During validate, allow a fallback UUID to satisfy validation; ignored if not applying
+  subscription_id = get_env("ARM_SUBSCRIPTION_ID", "00000000-0000-0000-0000-000000000000")
   tags = { environment = "ollama" }
 }

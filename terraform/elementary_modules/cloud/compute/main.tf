@@ -21,12 +21,15 @@ module "aws_ec2" {
   source = "../../aws/ec2"
   count  = local.use_aws ? 1 : 0
 
-  region              = var.location
-  name                = var.vm_name
-  instance_type       = var.instance_type
-  network_interface_id = var.network_interface_id
-  ssh_public_key      = var.ssh_public_key
-  tags                = var.tags
+  aws_region                = var.location
+  instance_name             = var.vm_name
+  instance_type             = var.instance_type
+  subnet_id                 = null
+  security_group_ids        = []
+  associate_public_ip_address = true
+  ami                       = null
+  key_name                  = null
+  tags                      = var.tags
 }
 
 output "name" {
@@ -34,9 +37,9 @@ output "name" {
 }
 
 output "public_ip_address" {
-  value = local.use_azure ? module.azure_vm[0].public_ip_address : (local.use_aws ? module.aws_ec2[0].public_ip_address : null)
+  value = local.use_azure ? module.azure_vm[0].public_ip_address : (local.use_aws ? module.aws_ec2[0].public_ip : null)
 }
 
 output "private_ip_address" {
-  value = local.use_azure ? module.azure_vm[0].private_ip_address : (local.use_aws ? module.aws_ec2[0].private_ip_address : null)
+  value = local.use_azure ? module.azure_vm[0].private_ip_address : (local.use_aws ? module.aws_ec2[0].private_ip : null)
 }

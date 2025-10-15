@@ -2,6 +2,11 @@ include {
   path = find_in_parent_folders("variables_ollama.hcl")
 }
 
+locals {
+  root  = read_terragrunt_config(find_in_parent_folders("variables_ollama.hcl"))
+  cloud = try(local.root.locals.cloud, get_env("CLOUD", get_env("AWS_REGION", "") != "" ? "aws" : "azure"))
+}
+
 dependency "rg" {
   config_path = "../resource_group"
   
@@ -29,6 +34,10 @@ dependency "public_ip" {
 
 terraform {
   source = "../../../terraform/elementary_modules/cloud/network_interface"
+  include_in_copy = [
+    "../../../terraform/elementary_modules/aws",
+    "../../../terraform/elementary_modules/azure"
+  ]
 }
 
 inputs = {

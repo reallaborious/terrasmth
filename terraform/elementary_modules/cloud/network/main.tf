@@ -20,12 +20,11 @@ module "aws_vpc" {
   source = "../../aws/vpc"
   count  = local.use_aws ? 1 : 0
 
-  region          = var.location
-  name            = "ollama-vpc"
-  cidr_block      = var.address_space[0]
-  subnet_prefixes = var.subnet_prefixes
-  subnet_names    = var.subnet_names
-  tags            = var.tags
+  aws_region   = var.location
+  name         = "ollama"
+  vpc_cidr     = var.address_space[0]
+  subnet_cidrs = var.subnet_prefixes
+  tags         = var.tags
 }
 
 output "subnet_ids" {

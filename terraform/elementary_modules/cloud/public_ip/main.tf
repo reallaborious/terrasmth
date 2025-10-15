@@ -19,12 +19,13 @@ module "aws_eip" {
   source = "../../aws/eip"
   count  = local.use_aws ? 1 : 0
 
-  region = var.location
-  tags   = var.tags
+  aws_region = var.location
+  name       = "ollama-pip"
+  tags       = var.tags
 }
 
 output "public_ip_id" {
-  value = local.use_azure ? module.azure_pip[0].public_ip_id : (local.use_aws ? module.aws_eip[0].allocation_id : null)
+  value = local.use_azure ? module.azure_pip[0].public_ip_id : (local.use_aws ? module.aws_eip[0].eip_id : null)
 }
 
 output "public_ip_address" {
