@@ -33,24 +33,29 @@ dependency "public_ip" {
 }
 
 terraform {
-  source = "../../../terraform/elementary_modules/cloud/network_interface"
-  include_in_copy = [
-    "../../../terraform/elementary_modules/aws",
-    "../../../terraform/elementary_modules/azure"
-  ]
+  source = local.cloud == "azure" ? "../../../terraform/elementary_modules/azure/network_interface" : "../../../terraform/elementary_modules/aws/eni"
 }
 
-inputs = {
-  cloud            = local.cloud
-  location         = dependency.rg.outputs.location
-  rg_name          = dependency.rg.outputs.resource_group_name
-  subnet_id        = dependency.network.outputs.subnet_ids[0]
-  public_ip_id     = dependency.public_ip.outputs.public_ip_id
-  security_group_id = dependency.nsg.outputs.network_security_group_id
-  
+inputs = local.cloud == "azure" ? {
+  network_interface_name = "ollama-vm-nic"
+  location               = dependency.rg.outputs.location
+  resource_group_name    = dependency.rg.outputs.resource_group_name
+  ip_configurations = [
+    {
+      name                          = "internal"
+      subnet_id                     = dependency.network.outputs.subnet_ids[0]
+      private_ip_address_allocation = "Dynamic"
+      public_ip_address_id          = dependency.public_ip.outputs.public_ip_id
+    }
+  ]
   tags = {
     Environment = "development"
     Project     = "ollama"
     Component   = "network-interface"
   }
+} : {
+  region                 = dependency.rg.outputs.location
+  subnet_id              = dependency.network.outputs.subnet_ids[0]
+  public_ip_allocation_id = dependency.public_ip.outputs.public_ip_id
+  security_group_ids     = []
 }

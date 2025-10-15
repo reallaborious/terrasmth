@@ -4,7 +4,7 @@ locals {
 }
 
 module "azure_vm" {
-  source = "../../azure/vps-linux"
+  source = "../terraform/elementary_modules/azure/vps-linux"
   count  = local.use_azure ? 1 : 0
 
   vm_name               = var.vm_name
@@ -18,7 +18,7 @@ module "azure_vm" {
 }
 
 module "aws_ec2" {
-  source = "../../aws/ec2"
+  source = "../terraform/elementary_modules/aws/ec2"
   count  = local.use_aws ? 1 : 0
 
   aws_region                = var.location

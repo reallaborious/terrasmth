@@ -4,7 +4,7 @@ locals {
 }
 
 module "azure_vnet" {
-  source = "../../azure/virtual_network"
+  source = "../terraform/elementary_modules/azure/virtual_network"
   count  = local.use_azure ? 1 : 0
 
   vnet_name       = "ollama-vnet"
@@ -17,7 +17,7 @@ module "azure_vnet" {
 }
 
 module "aws_vpc" {
-  source = "../../aws/vpc"
+  source = "../terraform/elementary_modules/aws/vpc"
   count  = local.use_aws ? 1 : 0
 
   aws_region   = var.location
@@ -29,4 +29,8 @@ module "aws_vpc" {
 
 output "subnet_ids" {
   value = local.use_azure ? module.azure_vnet[0].subnet_ids : (local.use_aws ? module.aws_vpc[0].subnet_ids : [])
+}
+
+output "vpc_id" {
+  value = local.use_aws ? module.aws_vpc[0].vpc_id : null
 }

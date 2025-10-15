@@ -32,26 +32,28 @@ dependency "nsg_association" {
 }
 
 terraform {
-  source = "../../../terraform/elementary_modules/cloud/compute"
-  include_in_copy = [
-    "../../../terraform/elementary_modules/aws",
-    "../../../terraform/elementary_modules/azure"
-  ]
+  source = local.cloud == "azure" ? "../../../terraform/elementary_modules/azure/vps-linux" : "../../../terraform/elementary_modules/aws/ec2"
 }
 
-inputs = {
-  cloud                = local.cloud
-  vm_name              = "ollama-vm"
-  rg_name              = dependency.rg.outputs.resource_group_name
-  location             = dependency.rg.outputs.location
+inputs = local.cloud == "azure" ? {
+  vm_name               = "ollama-vm"
+  resource_group_name   = dependency.rg.outputs.resource_group_name
+  location              = dependency.rg.outputs.location
+  network_interface_ids = [dependency.network_interface.outputs.network_interface_id]
+  admin_username        = local.ssh_user
+  ssh_public_key        = get_env("TF_SSH_PUBLIC_KEY", "")
+  vm_size               = get_env("TF_VM_SIZE", "Standard_B4ms")
+  tags = {
+    Environment = "development"
+    Project     = "ollama"
+    Component   = "virtual-machine"
+  }
+} : {
+  region               = dependency.rg.outputs.location
+  name                 = "ollama-vm"
+  instance_type        = get_env("TF_INSTANCE_TYPE", "t3.micro")
   network_interface_id = dependency.network_interface.outputs.network_interface_id
-  
-  # VM Configuration
-  admin_username  = local.ssh_user
-  ssh_public_key  = get_env("TF_SSH_PUBLIC_KEY", "")
-  vm_size         = get_env("TF_VM_SIZE", "Standard_B4ms")
-  instance_type   = get_env("TF_INSTANCE_TYPE", "t3.micro")
-  
+  ssh_public_key       = get_env("TF_SSH_PUBLIC_KEY", "")
   tags = {
     Environment = "development"
     Project     = "ollama"

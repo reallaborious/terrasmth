@@ -19,20 +19,29 @@ dependency "rg" {
 
 
 terraform {
-  source = "../../../terraform/elementary_modules/cloud/public_ip"
-  include_in_copy = [
-    "../../../terraform/elementary_modules/aws",
-    "../../../terraform/elementary_modules/azure"
-  ]
+  source = local.cloud == "azure" ? "../../../terraform/elementary_modules/azure/public_ip" : "../../../terraform/elementary_modules/aws/eip"
 }
 
-inputs = {
-  cloud     = local.cloud
-  rg_name   = dependency.rg.outputs.resource_group_name
-  location  = dependency.rg.outputs.location
-  tags = {
-    Environment = "development"
-    Project     = "ollama"
-    Component   = "public-ip"
-  }
+locals {
+  azure_inputs_yaml = <<-EOT
+    public_ip_name: "ollama-vm-pip"
+    resource_group_name: "${dependency.rg.outputs.resource_group_name}"
+    location: "${dependency.rg.outputs.location}"
+    allocation_method: "Static"
+    sku: "Standard"
+    tags:
+      Environment: "development"
+      Project: "ollama"
+      Component: "public-ip"
+  EOT
+
+  aws_inputs_yaml = <<-EOT
+    region: "${dependency.rg.outputs.location}"
+    tags:
+      Environment: "development"
+      Project: "ollama"
+      Component: "eip"
+  EOT
 }
+
+inputs = yamldecode(local.cloud == "azure" ? local.azure_inputs_yaml : local.aws_inputs_yaml)

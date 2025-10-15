@@ -5,6 +5,34 @@ include {
 locals {
   root  = read_terragrunt_config(find_in_parent_folders("variables_ollama.hcl"))
   cloud = try(local.root.locals.cloud, get_env("CLOUD", get_env("AWS_REGION", "") != "" ? "aws" : "azure"))
+  azure_inputs_yaml = <<-EOT
+    vnet_name: "ollama-vnet"
+    location: "${dependency.rg.outputs.location}"
+    rg_name: "${dependency.rg.outputs.resource_group_name}"
+    address_space:
+      - "10.0.0.0/16"
+    subnet_names:
+      - "ollama-subnet"
+    subnet_prefixes:
+      - "10.0.1.0/24"
+    tags:
+      Environment: "development"
+      Project: "ollama"
+      Component: "virtual-network"
+  EOT
+  aws_inputs_yaml = <<-EOT
+    region: "${dependency.rg.outputs.location}"
+    name: "ollama-vpc"
+    cidr_block: "10.0.0.0/16"
+    subnet_prefixes:
+      - "10.0.1.0/24"
+    subnet_names:
+      - "ollama-subnet"
+    tags:
+      Environment: "development"
+      Project: "ollama"
+      Component: "vpc"
+  EOT
 }
 
 dependency "rg" {
@@ -19,24 +47,39 @@ dependency "rg" {
 
 
 terraform {
-  source = "../../../terraform/elementary_modules/cloud/network"
-  include_in_copy = [
-    "../../../terraform/elementary_modules/aws",
-    "../../../terraform/elementary_modules/azure"
-  ]
+  source = local.cloud == "azure" ? "../../../terraform/elementary_modules/azure/virtual_network" : "../../../terraform/elementary_modules/aws/vpc"
 }
 
-inputs = {
-  cloud           = local.cloud
-  location        = dependency.rg.outputs.location
-  rg_name         = dependency.rg.outputs.resource_group_name
-  address_space   = ["10.0.0.0/16"]
-  subnet_names    = ["ollama-subnet"]
-  subnet_prefixes = ["10.0.1.0/24"]
-  
-  tags = {
-    Environment = "development"
-    Project     = "ollama"
-    Component   = "network"
-  }
+locals {
+  azure_inputs_yaml = <<-EOT
+    vnet_name: "ollama-vnet"
+    location: "${dependency.rg.outputs.location}"
+    rg_name: "${dependency.rg.outputs.resource_group_name}"
+    address_space:
+      - "10.0.0.0/16"
+    subnet_names:
+      - "ollama-subnet"
+    subnet_prefixes:
+      - "10.0.1.0/24"
+    tags:
+      Environment: "development"
+      Project: "ollama"
+      Component: "virtual-network"
+  EOT
+
+  aws_inputs_yaml = <<-EOT
+    region: "${dependency.rg.outputs.location}"
+    name: "ollama-vpc"
+    cidr_block: "10.0.0.0/16"
+    subnet_prefixes:
+      - "10.0.1.0/24"
+    subnet_names:
+      - "ollama-subnet"
+    tags:
+      Environment: "development"
+      Project: "ollama"
+      Component: "vpc"
+  EOT
 }
+
+inputs = yamldecode(local.cloud == "azure" ? local.azure_inputs_yaml : local.aws_inputs_yaml)

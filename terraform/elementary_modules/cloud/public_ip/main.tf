@@ -4,7 +4,7 @@ locals {
 }
 
 module "azure_pip" {
-  source = "../../azure/public_ip"
+  source = "../terraform/elementary_modules/azure/public_ip"
   count  = local.use_azure ? 1 : 0
 
   public_ip_name      = "ollama-vm-pip"
@@ -16,7 +16,7 @@ module "azure_pip" {
 }
 
 module "aws_eip" {
-  source = "../../aws/eip"
+  source = "../terraform/elementary_modules/aws/eip"
   count  = local.use_aws ? 1 : 0
 
   aws_region = var.location

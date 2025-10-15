@@ -4,7 +4,7 @@ locals {
 }
 
 module "azure_nsg" {
-  source = "../../azure/network_security_group"
+  source = "../terraform/elementary_modules/azure/network_security_group"
   count  = local.use_azure ? 1 : 0
 
   network_security_group_name = "ollama-vm-nsg"
@@ -15,14 +15,14 @@ module "azure_nsg" {
 }
 
 module "aws_sg" {
-  source = "../../aws/security_group"
+  source = "../terraform/elementary_modules/aws/security_group"
   count  = local.use_aws ? 1 : 0
 
-  region  = var.location
-  name    = "ollama-sg"
-  vpc_id  = var.vpc_id
-  ingress = []
-  tags    = var.tags
+  aws_region = var.location
+  name       = "ollama-sg"
+  vpc_id     = var.vpc_id
+  ingress_rules = []
+  tags       = var.tags
 }
 
 output "security_group_id" {

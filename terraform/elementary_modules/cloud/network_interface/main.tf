@@ -4,7 +4,7 @@ locals {
 }
 
 module "azure_nic" {
-  source = "../../azure/network_interface"
+  source = "../terraform/elementary_modules/azure/network_interface"
   count  = local.use_azure ? 1 : 0
 
   network_interface_name = "ollama-vm-nic"
@@ -22,7 +22,7 @@ module "azure_nic" {
 }
 
 module "aws_eni" {
-  source = "../../aws/eni"
+  source = "../terraform/elementary_modules/aws/eni"
   count  = local.use_aws ? 1 : 0
 
   aws_region         = var.location
