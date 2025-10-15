@@ -19,7 +19,7 @@ resource "azurerm_linux_virtual_machine" "this" {
 
   # SSH key configuration
   dynamic "admin_ssh_key" {
-    for_each = var.ssh_public_key != null ? [1] : []
+    for_each = var.ssh_public_key != null && trimspace(var.ssh_public_key) != "" ? [1] : []
     content {
       username   = var.admin_username
       public_key = var.ssh_public_key

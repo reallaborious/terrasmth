@@ -43,8 +43,8 @@ inputs = {
   # VM Configuration
   # Use universal SSH user from variables_ollama.hcl locals
   admin_username = local.ssh_user
-  # Avoid local file dependency during validate; allow env override
-  ssh_public_key = get_env("TF_SSH_PUBLIC_KEY", null)
+  # Avoid local file dependency during validate; allow env override (empty string tolerated)
+  ssh_public_key = get_env("TF_SSH_PUBLIC_KEY", "")
   vm_size       = get_env("TF_VM_SIZE", "Standard_B4ms")
   #vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script
   
