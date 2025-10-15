@@ -24,5 +24,5 @@ terraform {
 
 inputs = {
   subnet_id                    = dependency.network.outputs.subnet_ids[0]
-  network_security_group_id    = dependency.nsg.outputs.security_group_id != null ? dependency.nsg.outputs.security_group_id : dependency.nsg.outputs.network_security_group_id
+  network_security_group_id    = dependency.nsg.outputs.network_security_group_id
 }
