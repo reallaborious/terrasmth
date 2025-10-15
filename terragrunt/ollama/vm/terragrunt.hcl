@@ -2,6 +2,11 @@ include {
   path = find_in_parent_folders("variables_ollama.hcl")
 }
 
+locals {
+  root      = read_terragrunt_config(find_in_parent_folders("variables_ollama.hcl"))
+  ssh_user  = try(local.root.locals.ssh_user, get_env("TF_SSH_USER", "ollama"))
+}
+
 dependency "rg" {
   config_path = "../resource_group"
   
@@ -38,7 +43,8 @@ inputs = {
   # VM Configuration
   # Use universal SSH user from variables_ollama.hcl locals
   admin_username = local.ssh_user
-  ssh_public_key = file("~/.ssh/id_rsa.pub")
+  # Avoid local file dependency during validate; allow env override
+  ssh_public_key = get_env("TF_SSH_PUBLIC_KEY", null)
   vm_size       = get_env("TF_VM_SIZE", "Standard_B4ms")
   #vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script
   

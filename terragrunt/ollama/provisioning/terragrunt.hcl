@@ -2,6 +2,11 @@ include {
   path = find_in_parent_folders("variables_ollama.hcl")
 }
 
+locals {
+  root      = read_terragrunt_config(find_in_parent_folders("variables_ollama.hcl"))
+  ssh_user  = try(local.root.locals.ssh_user, get_env("TF_SSH_USER", "ollama"))
+}
+
 dependency "vm" {
   config_path = "../vm"
   

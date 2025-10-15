@@ -20,7 +20,8 @@ inputs = {
   location                   = dependency.rg.outputs.location
   resource_group_name        = dependency.rg.outputs.resource_group_name
   sku_name                   = "standard"
-  tenant_id                  = get_env("ARM_TENANT_ID")
+  # Use optional ARM_TENANT_ID during validate; allow null
+  tenant_id                  = get_env("ARM_TENANT_ID", null)
   soft_delete_retention_days = 7
   purge_protection_enabled   = false
   tags = { environment = "ollama" }
