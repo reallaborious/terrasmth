@@ -14,16 +14,13 @@ dependency "rg" {
 
 
 terraform {
-  source = "../../../terraform/elementary_modules/azure/public_ip"
+  source = "../../../terraform/elementary_modules/cloud/public_ip"
 }
 
 inputs = {
-  public_ip_name      = "ollama-vm-pip"
-  resource_group_name = dependency.rg.outputs.resource_group_name
-  location           = dependency.rg.outputs.location
-  allocation_method  = "Static"
-  sku               = "Standard"
-  
+  cloud     = local.cloud
+  rg_name   = dependency.rg.outputs.resource_group_name
+  location  = dependency.rg.outputs.location
   tags = {
     Environment = "development"
     Project     = "ollama"

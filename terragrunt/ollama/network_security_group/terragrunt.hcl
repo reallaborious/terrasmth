@@ -12,50 +12,14 @@ dependency "rg" {
 }
 
 terraform {
-  source = "../../../terraform/elementary_modules/azure/network_security_group"
+  source = "../../../terraform/elementary_modules/cloud/security"
 }
 
 inputs = {
-  network_security_group_name = "ollama-vm-nsg"
-  location                   = dependency.rg.outputs.location
-  resource_group_name        = dependency.rg.outputs.resource_group_name
-  
-  security_rules = [
-    {
-      name                       = "SSH"
-      priority                   = 1001
-      direction                 = "Inbound"
-      access                    = "Allow"
-      protocol                  = "Tcp"
-      source_port_range         = "*"
-      destination_port_range    = "22"
-      source_address_prefix     = "*"
-      destination_address_prefix = "*"
-    },
-    {
-      name                       = "HTTP"
-      priority                   = 1002
-      direction                 = "Inbound"
-      access                    = "Allow"
-      protocol                  = "Tcp"
-      source_port_range         = "*"
-      destination_port_range    = "80"
-      source_address_prefix     = "*"
-      destination_address_prefix = "*"
-    },
-    {
-      name                       = "HTTPS"
-      priority                   = 1003
-      direction                 = "Inbound"
-      access                    = "Allow"
-      protocol                  = "Tcp"
-      source_port_range         = "*"
-      destination_port_range    = "443"
-      source_address_prefix     = "*"
-      destination_address_prefix = "*"
-    }
-  ]
-  
+  cloud    = local.cloud
+  location = dependency.rg.outputs.location
+  rg_name  = dependency.rg.outputs.resource_group_name
+  vpc_id   = null
   tags = {
     Environment = "development"
     Project     = "ollama"

@@ -14,11 +14,11 @@ dependency "rg" {
 
 
 terraform {
-  source = "../../../terraform/elementary_modules/azure/virtual_network"
+  source = "../../../terraform/elementary_modules/cloud/network"
 }
 
 inputs = {
-  vnet_name       = "ollama-vnet"
+  cloud           = local.cloud
   location        = dependency.rg.outputs.location
   rg_name         = dependency.rg.outputs.resource_group_name
   address_space   = ["10.0.0.0/16"]
