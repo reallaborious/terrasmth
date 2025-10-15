@@ -32,7 +32,8 @@ variable "network_interface_ids" {
 variable "admin_username" {
   description = "Administrator username for the VM"
   type        = string
-  default     = "adminuser"
+  # Default to a universal Terraform-managed SSH user name
+  default     = "terrasmth"
   
   validation {
     condition     = length(var.admin_username) >= 1 && length(var.admin_username) <= 20

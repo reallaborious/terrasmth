@@ -11,4 +11,12 @@ locals {
   nvidia_container_toolkit=true
   # Hint for playbooks that Ollama should use GPU
   ollama_gpu=true
+
+  # Universal cloud selector with simple env-based detection; can be overridden by CLOUD
+  # Values: "azure" | "aws"
+  cloud = get_env("CLOUD", get_env("AWS_REGION", "") != "" ? "aws" : "azure")
+
+  # Universal SSH admin user (module default is 'terrasmth'); stacks can override
+  # For Ollama stack we use 'ollama' by default, but allow TF_SSH_USER env override
+  ssh_user = get_env("TF_SSH_USER", "ollama")
 }

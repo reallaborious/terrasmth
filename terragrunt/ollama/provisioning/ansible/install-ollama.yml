@@ -100,8 +100,8 @@
 
           [Service]
           ExecStart=/usr/local/bin/ollama serve
-          User=ollama
-          Group=ollama
+          User={{ ansible_user | default('terrasmth') }}
+          Group={{ ansible_user | default('terrasmth') }}
           Restart=always
           RestartSec=3
           Environment="OLLAMA_HOST=127.0.0.1:11434"
@@ -112,10 +112,10 @@
 
     - name: Create ollama user
       user:
-        name: ollama
+        name: "{{ ansible_user | default('terrasmth') }}"
         system: yes
-        shell: /bin/false
-        home: /usr/share/ollama
+        shell: /bin/bash
+        home: "/home/{{ ansible_user | default('terrasmth') }}"
 
     - name: Enable and start Ollama service
       systemd:

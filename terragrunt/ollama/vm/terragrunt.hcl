@@ -36,7 +36,8 @@ inputs = {
   network_interface_ids = [dependency.network_interface.outputs.network_interface_id]
   
   # VM Configuration
-  admin_username = "azureuser"
+  # Use universal SSH user from variables_ollama.hcl locals
+  admin_username = local.ssh_user
   ssh_public_key = file("~/.ssh/id_rsa.pub")
   vm_size       = get_env("TF_VM_SIZE", "Standard_B4ms")
   #vm_size       = "Standard_B4ms"  # 4 vCPUs, 16 GB RAM - matches vm script

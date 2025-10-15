@@ -23,7 +23,8 @@ inputs = {
   target_hosts = [{
     name = dependency.vm.outputs.name
     ansible_host = dependency.vm.outputs.public_ip_address
-    ansible_user = "azureuser"
+    # Use the same SSH user used to create the VM
+    ansible_user = local.ssh_user
     ansible_ssh_private_key_file = "~/.ssh/id_rsa"
   }]
   
